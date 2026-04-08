@@ -19,5 +19,10 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
+Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
+Route::get('/admin/dashboard', [ReportController::class, 'adminIndex'])
+    ->middleware(['auth']) // Harus login
+    ->name('admin.dashboard');
 
 require __DIR__.'/auth.php';

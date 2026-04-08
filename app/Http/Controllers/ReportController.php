@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\Report;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
@@ -26,5 +27,30 @@ class ReportController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Aduan berhasil dikirim!');
+    }
+
+    public function index()
+    {
+        $reports = Auth::user()->reports()->latest()->get();
+
+        return view('reports.index', compact('reports'));
+    }
+
+    public function adminIndex()
+    {
+        $reports = Report::with('user')->latest()->get();
+
+        return view('admin.index', compact('reports'));
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $report = Report::findOrFail($id);
+        $report->update([
+            'status' => $request->status,
+            'admin_feedback' => $request->feedback
+        ]);
+
+        return redirect()->back()->with('success', 'Status berhasil diperbarui!');
     }
 }
