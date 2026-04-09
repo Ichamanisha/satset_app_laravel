@@ -1,56 +1,55 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'location' => 'required',
-            'image' => 'required|image|mimes:jpg,png,jpeg|max:2048',
-        ]);
-
-        $path = $request->file('image')->store('reports', 'public');
-
-        Report::create([
-            'user_id' => auth()->id(),
-            'title' => $request->title,
-            'description' => $request->description,
-            'location' => $request->location,
-            'image' => $path,
-        ]);
-
-        return redirect()->back()->with('success', 'Aduan berhasil dikirim!');
-    }
-
     public function index()
     {
         $reports = Auth::user()->reports()->latest()->get();
-
         return view('reports.index', compact('reports'));
     }
 
-    public function adminIndex()
+    public function create()
     {
-        $reports = Report::with('user')->latest()->get();
-
-        return view('admin.index', compact('reports'));
+        return view('reports.create');
     }
 
-    public function updateStatus(Request $request, $id)
+    public function store(Request $request)
     {
-        $report = Report::findOrFail($id);
-        $report->update([
-            'status' => $request->status,
-            'admin_feedback' => $request->feedback
+
+        $request->validate([
+            'title'       => 'required|string|max:255',
+            'description' => 'required|string',
+            'location'    => 'required|string|max:255',
+            'photo'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        return redirect()->back()->with('success', 'Status berhasil diperbarui!');
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('photos', 'public');
+        }
+
+        Auth::user()->reports()->create([
+            'title'       => $request->title,
+            'description' => $request->description,
+            'location'    => $request->location,
+            'photo'       => $photoPath,
+        ]);
+
+        return redirect()->route('reports.index')
+            ->with('success', 'Aduan berhasil dikirim!');
+    }
+
+    public function show(Report $report)
+    {
+        if ($report->user_id !== Auth::id()) {
+            abort(403);
+        }
+        return view('reports.show', compact('report'));
     }
 }

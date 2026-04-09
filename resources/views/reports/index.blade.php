@@ -21,6 +21,10 @@
                                 {{ strtoupper($report->status) }}
                             </span>
                         </div>
+                        <a href="{{ route('reports.show', $report) }}"
+   class="mt-2 inline-block text-blue-600 text-sm hover:underline">
+    Lihat Detail →
+</a>
                     </div>
                 @endforeach
             </div>

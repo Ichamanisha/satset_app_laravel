@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->string('location');
-            $table->string('image');
+            $table->string('photo')->nullable();
             $table->enum('status', ['pending', 'proses', 'selesai'])->default('pending');
             $table->text('admin_feedback')->nullable();
             $table->timestamps();
