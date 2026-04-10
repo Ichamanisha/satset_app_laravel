@@ -8,6 +8,30 @@ use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
+    public function adminIndex()
+    {
+        if (auth()->user()->email !== 'admin@gmail.com') {
+            abort(403, 'Anda bukan Admin!');
+        }
+
+        $reports = Report::with('user')->latest()->get();
+        return view('admin.index', compact('reports'));
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,proses,selesai',
+        ]);
+
+        $report = Report::findOrFail($id);
+        $report->update([
+            'status' => $request->status,
+        ]);
+
+        return redirect()->back()->with('success', 'Status laporan berhasil diperbarui!');
+    }
+
     public function index()
     {
         $reports = Auth::user()->reports()->latest()->get();

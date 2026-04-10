@@ -23,21 +23,24 @@
                         <tbody>
                             @foreach ($reports as $report)
                                 <tr class="border-b border-gray-50 hover:bg-gray-50 transition">
-                                    <td class="py-4 px-4 text-sm text-gray-700">{{ $report->user->name }}</td>
-                                    <td class="py-4 px-4 text-sm text-gray-700 font-medium">{{ $report->title }}</td>
-                                    <td class="py-4 px-4 text-sm text-gray-500">{{ $report->location }}</td>
-                                    <td class="py-4 px-4">
-                                        <span
-                                            class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
-                                        {{ $report->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
-                                        {{ $report->status == 'proses' ? 'bg-blue-100 text-blue-800' : '' }}
-                                        {{ $report->status == 'selesai' ? 'bg-green-100 text-green-800' : '' }}">
-                                            {{ ucfirst($report->status) }}
-                                        </span>
-                                    </td>
                                     <td class="py-4 px-4 text-sm">
-                                        <a href="#"
-                                            class="text-indigo-600 hover:text-indigo-900 font-bold">Detail</a>
+                                        <div class="flex items-center gap-4">
+                                            <form action="{{ route('admin.reports.update', $report->id) }}" method="POST">
+                                                @csrf
+                                                @method('PATCH')
+                                                <select name="status" onchange="this.form.submit()"
+                                                    class="text-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                                    <option value="pending" {{ $report->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                                    <option value="proses" {{ $report->status == 'proses' ? 'selected' : '' }}>Proses</option>
+                                                    <option value="selesai" {{ $report->status == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                                                </select>
+                                            </form>
+
+                                            <a href="{{ route('reports.show', $report->id) }}"
+                                            class="text-indigo-600 hover:text-indigo-900 font-bold text-xs uppercase tracking-widest">
+                                                Detail
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
