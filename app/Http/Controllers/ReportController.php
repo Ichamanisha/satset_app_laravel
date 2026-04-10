@@ -62,7 +62,7 @@ class ReportController extends Controller
             'title'       => $request->title,
             'description' => $request->description,
             'location'    => $request->location,
-            'photo'       => $photoPath,
+            'image'       => $photoPath,
         ]);
 
         return redirect()->route('reports.index')
